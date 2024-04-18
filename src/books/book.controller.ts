@@ -6,6 +6,7 @@ import createHttpError from 'http-errors';
 import bookModel from './book.model';
 import { AuthRequest } from '../middleware/authenticate';
 
+// create book
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, genre } = req.body;
@@ -69,6 +70,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// update book
 const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, genre } = req.body;
   const bookId = req.params.bookId;
@@ -145,11 +147,11 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   res.json(updatedBook);
 };
 
+// list books
 const listBooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // add pagination
-    const books = await bookModel.find(); 
-
+    const books = await bookModel.find();
 
     res.status(200).json({
       books: books,
@@ -159,5 +161,25 @@ const listBooks = async (req: Request, res: Response, next: NextFunction) => {
     return next(createHttpError(500, 'Error while listing books'));
   }
 };
+// get single book
+const getsingleBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const bookId = req.params.bookId;
+    const book = await bookModel.findOne({ _id: bookId });
+    if (!book) {
+      return next(createHttpError(404, 'Book not found'));
+    }
+    res.status(200).json({
+      book: book,
+      message: 'Book successfully',
+    });
+  } catch (error) {
+    return next(createHttpError(500, 'Error while getting single book'));
+  }
+};
 
-export { createBook, updateBook, listBooks };
+export { createBook, updateBook, listBooks, getsingleBook };
