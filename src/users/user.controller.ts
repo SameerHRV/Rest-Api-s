@@ -46,7 +46,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       .status(201)
       .json({ accessToken: token, message: 'User created successfully' });
   } catch (error) {
-    console.log(error);
+    console.log("Error while creating user", error);
   }
 };
 
