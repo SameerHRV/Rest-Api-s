@@ -1,9 +1,10 @@
-import path from 'node:path';
 import fs from 'node:fs';
+import path from 'node:path';
 import { NextFunction, Request, Response } from 'express';
 import cloudinary from '../config/clousinary';
 import createHttpError from 'http-errors';
 import bookModel from './book.model';
+import { AuthRequest } from '../middleware/authenticate';
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -41,17 +42,13 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
       format: 'pdf',
     });
 
-    console.log('Upload Result', uploadResult);
-    console.log('Upload Result', bookUploadResult);
-
-    //@ts-ignore
-    console.log("userID", req.userId);
+    const _req = req as AuthRequest;
 
     // create book
     const newBook = await bookModel.create({
       title,
       genre,
-      author: "6620c9d31eb14919b1495dd2",
+      author: _req.userId,
       coverImage: uploadResult.secure_url,
       file: bookUploadResult.secure_url,
     })
